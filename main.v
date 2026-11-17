@@ -31,9 +31,9 @@ module main
    output   led1_b
    );
 
-   assign led0_r = 0;
-   assign led0_g = 0;
-   assign led0_b = 0;
+    assign led0_r = trng_word[0];
+    assign led0_g = trng_word[1];
+    assign led0_b = trng_error;
    //assign led1_r = 0;
    //assign led1_g = 0;
    //assign led1_b = 0;
@@ -56,6 +56,21 @@ module main
     
    wire proc_clk;
    
+   wire [31:0] trng_word;
+    wire [31:0] trng_word_count;
+    wire [31:0] trng_trip_count;
+    
+    wire trng_valid;
+    wire trng_busy;
+    wire trng_error;
+   reg [7:0] reset_count = 8'd0;
+
+    always @(posedge proc_clk) begin
+        if (!reset_count[7])
+            reset_count <= reset_count + 1'b1;
+    end
+    
+    wire proc_rst_n = reset_count[7];
    clk_wiz_0 clock_inst (
         .clk_in1  (eth_clk_125MHz),
         .clk_out1 (proc_clk)
